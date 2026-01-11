@@ -1,3 +1,4 @@
+awk '{gsub(/"/, "\\\""); gsub(/\t/, ""); gsub("\0", "\\0"); print "\"" $0 "\\n\"" }' result.c
 wget https://raw.githubusercontent.com/codemanticism/CCinit/refs/heads/main/libraries/types.c
 
 /*C code*/
@@ -9,7 +10,7 @@ unsigned int (int argc, char *argv[]){
 ...
 #endif
 
-char compare(char* stringA, char* stringB){
+	char compare(char* stringA, char* stringB){
 	for(unsigned int i = 0;i < 32; i += 1){
 		if(*stringA != *stringB){
 			return 0;
@@ -25,25 +26,144 @@ char compare(char* stringA, char* stringB){
 	return 1;
 }
 
-unsigned int reading_file(some_file){
+struct array reading_file(){
 	FILE* fptr;
 	fptr = fopen("list.txt","r");
 	struct array array_ = create(16, 0, 1);
-	append(array_, struct array arr2, unsigned int size_of);
 	if(fptr == NULL){
 		printf("The file does not exist.\n");
 	}
 	struct array array_str = create(2, 1, 1);
+	((char*)array_str.ptr)[1] = '\0';
 	do
 	{
-		char c = fgetc(fp);
-		array_str.ptr[1] = '\0';
-		if(feof(fp))
+		char c = fgetc(fptr);
+		if(feof(fptr))
 			break;
-		array_str.ptr[0] = c;
+		((char*)array_str.ptr)[0] = c;
 		append(&array_, array_str, 1);					
 	} while(1);
-	array_str.ptr[0] = '\0';
-	append(&array_, array_str, 1);				
-	return array_.ptr;
+	return array_;
 }
+
+			FILE *fptr = fopen("list.txt", "w");
+			fprintf(fptr, (char*)array_.ptr);
+			fclose(fptr);
+
+#include <stdbool.h>
+#include "types.c"
+char let[] = "let";
+char long_[] = "long";
+char bigint[] = "BigInt(";
+char char_[] = "char";
+char while_[] = "while";
+char for_[] = "for";
+char if_[] = "if";
+char else_[] = "else";
+char unsigned_[] = "unsigned";
+char int_[] = "int";
+unsigned int count_length(char* str){
+	unsigned int i = 0;
+	for(; str[i] != '\0'; i++){
+	}
+	return i;
+}
+bool is_number(char letter){
+	if((letter >= '0') && (letter <= '9')){
+		return true;
+	}
+	return false;
+}
+bool is_letter(char letter){
+	if((letter >= 'a') && (letter <= 'z')){
+		return true;
+	}else if((letter >= 'A') && (letter <= 'Z')){
+		return true;
+	}
+	return false;
+}
+array ast_generator(char* code){
+	array ast = create(16,0,1);
+	array item = create(1,1,1);
+	for(unsigned int i = 0; code[i] != '\0';){
+		if(is_letter(code[i])){
+			item[0] = &code[i];
+			append(&ast, item, 1);	
+			while(is_letter(code[i])){
+				i++;
+			}
+		}else if(is_number(code[i])){
+			item[0] = &code[i];
+			append(&ast, item, 1);	
+			while(is_number(code[i])){
+				i++;
+			}
+		}else{
+			char* compare_against = "+-*/=!";
+			for(unsigned int i = 0; i < (sizeof(compare_against) - 1); i++){
+				item[0] = compare_against;
+				append(&ast, item, 1);	
+			}
+			i++;
+			if(code[i] == '='){
+				i++;
+			}
+		}
+	}
+	free(ast.ptr);
+	free(item.ptr);
+	return ast;	
+}
+bool compare(char* stringA, char* stringB){
+	for(unsigned int i = 0;i < 32; i += 1){
+		if(*stringA != *stringB){
+			return false;
+		}
+		stringA += 1;
+		stringB += 1;
+		if((is_letter(*stringA) == 0) && (is_letter(*stringB) == 0)){
+			return true;		
+		}else if((is_letter(*stringA) == 0) || (is_letter(*stringB) == 0)){
+			return false;
+		}
+	}
+	return true;
+}
+
+struct array reading_file(char* str){
+	FILE* fptr;
+	fptr = fopen(str,"r");
+	struct array array_ = create(16, 0, 1);
+	if(fptr == NULL){
+		printf("The file does not exist.\n");
+	}
+	struct array array_str = create(1, 1, 1);
+	((char*)array_str.ptr)[1] = '\0';
+	do
+	{
+		char c = fgetc(fptr);
+		if(feof(fptr))
+			break;
+		((char*)array_str.ptr)[0] = c;
+		append(&array_, array_str, 1);					
+	} while(1);
+	free(array_.ptr);
+	free(array_str.ptr);	
+	return array_;
+}
+void writing_files(char* str, char* another_str){
+	FILE *fptr = fopen(str, "w");
+	fprintf(fptr, another_str);
+	fclose(fptr);
+}
+int main(){
+	struct array read_ = reading_file("txt.c");
+	struct array write_ = create(16, 0, 1);
+	bool is_declaration = false;
+	unsigned int count = 0;
+	char* name;
+}
+
+C#
+namespace
+class
